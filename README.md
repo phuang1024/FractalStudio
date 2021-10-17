@@ -10,3 +10,5 @@ make
 python main.py
 xdg-open out.png
 ```
+
+![](https://github.com/phuang1024/mandelbrot/blob/main/out.png?raw=true)
