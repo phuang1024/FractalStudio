@@ -20,7 +20,7 @@
 /**
  * Number of iterations to do.
  */
-#define  ITERS  100
+#define  ITERS  50
 
 #include <stdio.h>
 #include <string>
@@ -36,10 +36,12 @@ __device__ char point(const double re, const double im) {
         const double a = pt_re, b = pt_im;
         pt_re = a*a - b*b;
         pt_im = 2 * a * b;
-    }
+        pt_re += re;
+        pt_im += im;
 
-    if (pt_re*pt_re + pt_im*pt_im > 10000)
-        return 0;
+        if (pt_re*pt_re + pt_im*pt_im > 5)
+            return 0;
+    }
     return 1;
 }
 
@@ -85,8 +87,9 @@ int main(int argc, char** argv) {
     char* data;
     cudaMallocManaged(&data, width * height);
 
-    //compute<<<64, 64>>>(width, height, x_start, x_end, y_start, y_end, data);
+    compute<<<64, 64>>>(width, height, x_start, x_end, y_start, y_end, data);
     cudaDeviceSynchronize();
 
     fwrite(data, 1, width*height, stdout);
+    fflush(stdout);
 }
