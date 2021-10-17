@@ -23,19 +23,19 @@ import numpy as np
 import cv2
 from subprocess import Popen, PIPE
 
-WIDTH = 1920
-HEIGHT = 1920
+WIDTH = HEIGHT = 4096
 
 PARENT = os.path.dirname(os.path.realpath(__file__))
 EXE = os.path.join(PARENT, "a.out")
 
-args = [EXE, str(WIDTH), str(HEIGHT), "-3", "1", "-2", "2"]
+args = [EXE, str(WIDTH), str(HEIGHT), "-2.5", "1.5", "-2", "2"]
 proc = Popen(args, stdout=PIPE)
 time.sleep(3)
 
 img = np.empty((WIDTH*HEIGHT), dtype=np.uint8)
+data = proc.stdout.read(WIDTH*HEIGHT)
 for i in range(WIDTH*HEIGHT):
-    in_set = proc.stdout.read(1)[0]
+    in_set = data[i]
     img[i] = in_set * 255
 
 img = img.reshape((HEIGHT, WIDTH))
