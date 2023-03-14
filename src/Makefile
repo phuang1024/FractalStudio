@@ -1,5 +1,10 @@
 .PHONY: cuda cpu
 
+# Usage:
+# ./a.out width height max_iters
+# Then send "x_start x_end y_start y_end\n" to stdin
+# Read result from stdout.
+
 cuda:
 	nvcc kernel.cu -Wall -O3 -o kernel.cuda.out
 

@@ -35,12 +35,13 @@ def main():
     parser.add_argument("--kernel", default="cuda", choices=["cuda", "cpu"])
     parser.add_argument("--width", type=int, default=1280)
     parser.add_argument("--height", type=int, default=720)
+    parser.add_argument("--max-iters", type=int, default=256)
     args = parser.parse_args()
     width = args.width
     height = args.height
 
     kernel_path = ROOT / f"kernel.{args.kernel}.out"
-    proc = Popen([kernel_path, str(width), str(height)], stdin=PIPE, stdout=PIPE)
+    proc = Popen([kernel_path, str(width), str(height), str(args.max_iters)], stdin=PIPE, stdout=PIPE)
 
     if args.mode == "image":
         img, elapse = query_kernel(proc, width, height, -2.5, 1.5, -2, 2)
