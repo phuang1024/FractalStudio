@@ -1,5 +1,5 @@
 import argparse
-import os
+import math
 import sys
 import time
 from pathlib import Path
@@ -11,6 +11,8 @@ import pygame
 pygame.init()
 
 ROOT = Path(__file__).absolute().parent
+
+FONT = pygame.font.SysFont("ubuntu", 18)
 
 
 def query_kernel(proc, width, height, x_start, x_end, y_start, y_end):
@@ -27,6 +29,26 @@ def query_kernel(proc, width, height, x_start, x_end, y_start, y_end):
 
     elapse = time.time() - start
     return img, elapse
+
+
+def format_number(num: float) -> str:
+    """
+    Based on order, appends milli, micro, etc to it.
+    """
+    order = math.log10(num)
+    suffixes = (
+        (1e3, "kilo"),
+        (1, ""),
+        (1e-3, "milli"),
+        (1e-6, "micro"),
+        (1e-9, "nano"),
+    )
+
+    for thres, suf in suffixes:
+        if num > thres or suf == "nano":
+            return f"{num/thres:.4f} {suf}"
+
+    raise ValueError("This should not happen")
 
 
 def main():
@@ -55,6 +77,7 @@ def main():
 
         drag_start_mouse = None
         drag_start_center = None
+        render_time = 0
 
         run = True
         first_loop = True
@@ -85,17 +108,27 @@ def main():
                 changed = True
 
             if changed:
+                x_min = center[0] - x_size/2
+                x_max = center[0] + x_size/2
                 y_size = x_size * height / width
-                bounds = (center[0] - x_size/2, center[0] + x_size/2, center[1] - y_size/2, center[1] + y_size/2)
-                img, elapse = query_kernel(proc, width, height, *bounds)
-                sys.stdout.write(f"\rTime: {elapse*1000:.3f} ms   ")
+                y_min = center[1] - y_size/2
+                y_max = center[1] + y_size/2
 
+                img, render_time = query_kernel(proc, width, height, x_min, x_max, y_min, y_max)
                 img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
                 img = img.swapaxes(0, 1)
                 surface = pygame.surfarray.make_surface(img)
                 window.blit(surface, (0, 0))
 
-        print()
+                stats = [
+                        f"X: {x_min:.4f} to {x_max:.4f}; range {format_number(x_size)}",
+                        f"Y: {y_min:.4f} to {y_max:.4f}; range {format_number(y_size)}",
+                        f"Render time: {render_time*1000:.4f} ms"
+                ]
+                for i, stat in enumerate(stats):
+                    y = 24 * (i+1)
+                    text = FONT.render(stat, True, (128, 128, 128))
+                    window.blit(text, (18, y))
 
     proc.kill()
 
