@@ -21,16 +21,7 @@ def query_kernel(proc, width, height, x_start, x_end, y_start, y_end):
     proc.stdin.write(b"\n")
     proc.stdin.flush()
 
-    img = np.empty((width*height), dtype=np.uint8)
-    data = b""
-    i = 0
-    while i < width*height:
-        remaining = width*height - i
-        data = proc.stdout.read(remaining)
-
-        img[i:i+len(data)] = np.frombuffer(data, dtype=np.uint8)
-        i += len(data)
-
+    img = np.frombuffer(proc.stdout.read(width*height), dtype=np.uint8).copy()
     img = img.reshape((height, width))
     img[img == 127] = 255
 
@@ -52,7 +43,7 @@ def main():
     if args.mode == "image":
         img, elapse = query_kernel(proc, width, height, -2.5, 1.5, -2, 2)
         cv2.imwrite("out.png", img)
-        print(f"Time: {elapse:.3f} seconds")
+        print(f"Time: {elapse*1000:.3f} ms")
 
     elif args.mode == "live":
         window = pygame.display.set_mode((width, height))
@@ -94,7 +85,7 @@ def main():
                 y_size = x_size * height / width
                 bounds = (center[0] - x_size/2, center[0] + x_size/2, center[1] - y_size/2, center[1] + y_size/2)
                 img, elapse = query_kernel(proc, width, height, *bounds)
-                sys.stdout.write(f"\rTime: {elapse:.3f} seconds")
+                sys.stdout.write(f"\rTime: {elapse*1000:.3f} ms   ")
 
                 img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
                 img = img.swapaxes(0, 1)
