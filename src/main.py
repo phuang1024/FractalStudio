@@ -31,8 +31,8 @@ def query_kernel(proc, width, height, x_start, x_end, y_start, y_end):
         img[i:i+len(data)] = np.frombuffer(data, dtype=np.uint8)
         i += len(data)
 
-    img = img * 255
     img = img.reshape((height, width))
+    img[img == 127] = 255
 
     elapse = time.time() - start
     return img, elapse
@@ -41,8 +41,8 @@ def query_kernel(proc, width, height, x_start, x_end, y_start, y_end):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("mode", choices=["image", "live"])
-    parser.add_argument("--width", type=int)
-    parser.add_argument("--height", type=int)
+    parser.add_argument("--width", type=int, default=1280)
+    parser.add_argument("--height", type=int, default=720)
     args = parser.parse_args()
     width = args.width
     height = args.height

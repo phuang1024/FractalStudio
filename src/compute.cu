@@ -1,5 +1,5 @@
 // Max iterations
-#define  ITERS  100
+#define  ITERS  126
 
 #include <iostream>
 #include <stdio.h>
@@ -8,7 +8,9 @@
 
 /**
  * Returns number of iterations before norm >= 4.
- * Returns -1 if remains bounded.
+ * IMPORTANT:
+ * - Return 127 means it STAYS BOUNDED; it is in the set
+ * - Return 0-126 means it is not in the set; return is how many iterations it took.
  */
 __device__ char point_in_set(const double re, const double im) {
     double pt_re = 0, pt_im = 0;  // simulated point
@@ -21,13 +23,12 @@ __device__ char point_in_set(const double re, const double im) {
         pt_im += im;
 
         if (pt_re*pt_re + pt_im*pt_im > 5) {
-            return 0;
-            if (i > 127)
-                i = 127;
+            if (i > 126)
+                i = 126;
             return i;
         }
     }
-    return 1;
+    return 127;
 }
 
 /**
