@@ -1,2 +1,5 @@
 *.o
 *.out
+
+*.png
+!out.png

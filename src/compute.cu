@@ -1,35 +1,16 @@
-//
-//  Mandelbrot
-//  Compute the mandelbrot set with a GPU.
-//  Copyright Patrick Huang 2021
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-//
+// Max iterations
+#define  ITERS  100
 
-/**
- * Number of iterations to do.
- */
-#define  ITERS  50
-
+#include <iostream>
 #include <stdio.h>
 #include <string>
 
 
 /**
- * Whether point is in mandelbrot set.
+ * Returns number of iterations before norm >= 4.
+ * Returns -1 if remains bounded.
  */
-__device__ char point(const double re, const double im) {
+__device__ char point_in_set(const double re, const double im) {
     double pt_re = 0, pt_im = 0;  // simulated point
 
     for (int i = 0; i < ITERS; i++) {
@@ -39,8 +20,12 @@ __device__ char point(const double re, const double im) {
         pt_re += re;
         pt_im += im;
 
-        if (pt_re*pt_re + pt_im*pt_im > 5)
+        if (pt_re*pt_re + pt_im*pt_im > 5) {
             return 0;
+            if (i > 127)
+                i = 127;
+            return i;
+        }
     }
     return 1;
 }
@@ -50,7 +35,7 @@ __device__ char point(const double re, const double im) {
  * Prints results to stdout according to docs.
  */
 __global__ void compute(const int width, const int height, const double x_start, const double x_end,
-const double y_start, const double y_end, char* data) {
+        const double y_start, const double y_end, char* data) {
     const double x_scl = (x_end-x_start) / (double)width;
     const double y_scl = (y_end-y_start) / (double)height;
 
@@ -62,14 +47,17 @@ const double y_start, const double y_end, char* data) {
         const double x = x_start + (double)px_x*x_scl;
         const double y = y_start + (double)px_y*y_scl;
 
-        const char in_set = point(x, y);
-        data[i] = in_set;
+        char result = point_in_set(x, y);
+        data[i] = result;
     }
 }
 
 
 /**
- * argv: ./a.out width height x_start x_end y_start y_end
+ * Usage:
+ * ./a.out width height
+ * Then send "x_start x_end y_start y_end\n" to stdin
+ * Read result from stdout.
  */
 int main(int argc, char** argv) {
     if (argc < 3) {
@@ -79,17 +67,21 @@ int main(int argc, char** argv) {
 
     const int width = std::stoi(argv[1]);
     const int height = std::stoi(argv[2]);
-    const double x_start = std::stod(argv[3]);
-    const double x_end = std::stod(argv[4]);
-    const double y_start = std::stod(argv[5]);
-    const double y_end = std::stod(argv[6]);
 
-    char* data;
-    cudaMallocManaged(&data, width * height);
+    while (true) {
+        double x_start, x_end, y_start, y_end;
+        std::cin >> x_start >> x_end >> y_start >> y_end;
 
-    compute<<<64, 64>>>(width, height, x_start, x_end, y_start, y_end, data);
-    cudaDeviceSynchronize();
+        char* data;
+        cudaMallocManaged(&data, width * height);
 
-    fwrite(data, 1, width*height, stdout);
-    fflush(stdout);
+        std::cerr << "compute start" << std::endl;
+        compute<<<64, 64>>>(width, height, x_start, x_end, y_start, y_end, data);
+        cudaDeviceSynchronize();
+        std::cerr << "compute end" << std::endl;
+
+        fwrite(data, 1, width*height, stdout);
+        fflush(stdout);
+        std::cerr << "write end" << std::endl;
+    }
 }

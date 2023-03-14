@@ -1,42 +1,45 @@
-#
-#  Mandelbrot
-#  Compute the mandelbrot set with a GPU.
-#  Copyright Patrick Huang 2021
-#
-#  This program is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#
-
 import os
 import time
-import numpy as np
-import cv2
 from subprocess import Popen, PIPE
 
-WIDTH = HEIGHT = 4096
+import cv2
+import numpy as np
 
 PARENT = os.path.dirname(os.path.realpath(__file__))
-EXE = os.path.join(PARENT, "a.out")
+KERNEL = os.path.join(PARENT, "a.out")
+WIDTH = 4096
+HEIGHT = 4096
 
-args = [EXE, str(WIDTH), str(HEIGHT), "-2.5", "1.5", "-2", "2"]
-proc = Popen(args, stdout=PIPE)
-time.sleep(3)
 
-img = np.empty((WIDTH*HEIGHT), dtype=np.uint8)
-data = proc.stdout.read(WIDTH*HEIGHT)
-for i in range(WIDTH*HEIGHT):
-    in_set = data[i]
-    img[i] = in_set * 255
+def query_kernel(proc, x_start, x_end, y_start, y_end):
+    args = [x_start, x_end, y_start, y_end]
+    proc.stdin.write(" ".join(map(str, args)).encode())
+    proc.stdin.write(b"\n")
+    proc.stdin.flush()
 
-img = img.reshape((HEIGHT, WIDTH))
+    img = np.empty((WIDTH*HEIGHT), dtype=np.uint8)
+    data = b""
+    i = 0
+    while i < WIDTH*HEIGHT:
+        remaining = WIDTH*HEIGHT - i
+        data = proc.stdout.read(remaining)
+
+        img[i:i+len(data)] = np.frombuffer(data, dtype=np.uint8)
+        i += len(data)
+
+    img = img * 255
+    img = img.reshape((HEIGHT, WIDTH))
+    return img
+
+
+proc = Popen([KERNEL, str(WIDTH), str(HEIGHT)], stdin=PIPE, stdout=PIPE)
+img = query_kernel(proc, -2.5, 1.5, -2, 2)
+
+start = time.time()
+img = query_kernel(proc, -2.5, 1.5, -2, 2)
+elapse = time.time() - start
+
 cv2.imwrite("out.png", img)
+print(f"Time: {elapse:.2f} seconds")
+
+proc.kill()
