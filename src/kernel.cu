@@ -30,9 +30,8 @@ int main(int argc, char** argv) {
         q.x_end = x_end;
         q.y_start = y_start;
         q.y_end = y_end;
-        q.data = data;
 
-        compute<<<THREAD_BLOCKS, THREADS_PER_BLOCK>>>(width, height, x_start, x_end, y_start, y_end, data);
+        compute<<<CU_THREAD_BLOCKS, CU_THREADS_PER_BLOCK>>>(q, data, 0, 0);
         cudaDeviceSynchronize();
 
         fwrite(data, 1, width*height, stdout);

@@ -15,7 +15,6 @@ struct Query {
     int width, height;
     int max_iters;
     double x_start, x_end, y_start, y_end;
-    char* data;
 };
 
 
@@ -52,13 +51,13 @@ char point_in_set(const double re, const double im, int max_iters) {
 #ifdef USING_CUDA
 __global__
 #endif
-void compute(const Query& q, int start, int stride) {
+void compute(Query q, char* data, int start, int stride) {
     const double x_scl = (q.x_end-q.x_start) / (double)q.width;
     const double y_scl = (q.y_end-q.y_start) / (double)q.height;
 
     #ifdef USING_CUDA
-    const int start = blockIdx.x * blockDim.x + threadIdx.x;
-    const int stride = blockDim.x * gridDim.x;
+    start = blockIdx.x * blockDim.x + threadIdx.x;
+    stride = blockDim.x * gridDim.x;
     #endif
 
     for (int i = start; i < q.width*q.height; i += stride) {
@@ -67,6 +66,6 @@ void compute(const Query& q, int start, int stride) {
         const double y = q.y_start + (double)px_y*y_scl;
 
         char result = point_in_set(x, y, q.max_iters);
-        q.data[i] = result;
+        data[i] = result;
     }
 }

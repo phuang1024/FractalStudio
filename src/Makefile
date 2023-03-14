@@ -6,7 +6,7 @@
 # Read result from stdout.
 
 cuda:
-	nvcc kernel.cu -Wall -O3 -o kernel.cuda.out
+	nvcc kernel.cu -o kernel.cuda.out
 
 cpu:
-	g++ kernel.cpp -Wall -O3 -o kernel.cpu.out
+	g++ kernel.cpp -Wall -O3 -pthread -o kernel.cpu.out

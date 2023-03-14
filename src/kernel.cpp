@@ -30,11 +30,10 @@ int main(int argc, char** argv) {
         q.x_end = x_end;
         q.y_start = y_start;
         q.y_end = y_end;
-        q.data = data;
 
         std::vector<std::thread> threads;
         for (int i = 0; i < CPU_THREADS; i++) {
-            threads.push_back(std::thread(compute, q, i, CPU_THREADS));
+            threads.push_back(std::thread(compute, q, data, i, CPU_THREADS));
         }
         for (int i = 0; i < CPU_THREADS; i++) {
             threads[i].join();
