@@ -2,6 +2,7 @@ import argparse
 import os
 import sys
 import time
+from pathlib import Path
 from subprocess import Popen, PIPE
 
 import cv2
@@ -9,8 +10,7 @@ import numpy as np
 import pygame
 pygame.init()
 
-PARENT = os.path.dirname(os.path.realpath(__file__))
-KERNEL = os.path.join(PARENT, "a.out")
+ROOT = Path(__file__).absolute().parent
 
 
 def query_kernel(proc, width, height, x_start, x_end, y_start, y_end):
@@ -32,13 +32,15 @@ def query_kernel(proc, width, height, x_start, x_end, y_start, y_end):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("mode", choices=["image", "live"])
+    parser.add_argument("--kernel", default="cuda", choices=["cuda", "cpu"])
     parser.add_argument("--width", type=int, default=1280)
     parser.add_argument("--height", type=int, default=720)
     args = parser.parse_args()
     width = args.width
     height = args.height
 
-    proc = Popen([KERNEL, str(width), str(height)], stdin=PIPE, stdout=PIPE)
+    kernel_path = ROOT / f"kernel.{args.kernel}.out"
+    proc = Popen([kernel_path, str(width), str(height)], stdin=PIPE, stdout=PIPE)
 
     if args.mode == "image":
         img, elapse = query_kernel(proc, width, height, -2.5, 1.5, -2, 2)
