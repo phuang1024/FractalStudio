@@ -1,9 +1,13 @@
 // Max iterations
-#define  ITERS  128
+constexpr int ITERS = 128;
+
+constexpr int THREADS = 16;
 
 #include <iostream>
 #include <stdio.h>
 #include <string>
+#include <thread>
+#include <vector>
 
 
 /**
@@ -71,7 +75,13 @@ int main(int argc, char** argv) {
         char* data;
         data = (char*)malloc(width * height);
 
-        compute(width, height, x_start, x_end, y_start, y_end, data, 0, 1);
+        std::vector<std::thread> threads;
+        for (int i = 0; i < THREADS; i++) {
+            threads.push_back(std::thread(compute, width, height, x_start, x_end, y_start, y_end, data, i, THREADS));
+        }
+        for (int i = 0; i < THREADS; i++) {
+            threads[i].join();
+        }
 
         fwrite(data, 1, width*height, stdout);
         fflush(stdout);

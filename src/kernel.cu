@@ -1,5 +1,8 @@
 // Max iterations
-#define  ITERS  128
+constexpr int ITERS = 256;
+
+constexpr int THREAD_BLOCKS = 64;
+constexpr int THREADS_PER_BLOCK = 64;
 
 #include <iostream>
 #include <stdio.h>
@@ -74,7 +77,7 @@ int main(int argc, char** argv) {
         char* data;
         cudaMallocManaged(&data, width * height);
 
-        compute<<<64, 64>>>(width, height, x_start, x_end, y_start, y_end, data);
+        compute<<<THREAD_BLOCKS, THREADS_PER_BLOCK>>>(width, height, x_start, x_end, y_start, y_end, data);
         cudaDeviceSynchronize();
 
         fwrite(data, 1, width*height, stdout);
