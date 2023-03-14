@@ -75,13 +75,10 @@ int main(int argc, char** argv) {
         char* data;
         cudaMallocManaged(&data, width * height);
 
-        std::cerr << "compute start" << std::endl;
         compute<<<64, 64>>>(width, height, x_start, x_end, y_start, y_end, data);
         cudaDeviceSynchronize();
-        std::cerr << "compute end" << std::endl;
 
         fwrite(data, 1, width*height, stdout);
         fflush(stdout);
-        std::cerr << "write end" << std::endl;
     }
 }
