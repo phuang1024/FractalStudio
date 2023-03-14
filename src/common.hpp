@@ -19,15 +19,14 @@ struct Query {
 
 
 /**
- * Returns number of iterations before norm >= 4.
- * IMPORTANT:
- * - Return 127 means it STAYS BOUNDED; it is in the set
- * - Return 0-126 means it is not in the set; return is how many iterations it took.
+ * Returns color of point.
+ * 255 is in the set.
+ * 0-200 fades away.
  */
 #ifdef USING_CUDA
 __device__
 #endif
-char point_in_set(const double re, const double im, int max_iters) {
+unsigned char point_color(const double re, const double im, int max_iters) {
     double pt_re = 0, pt_im = 0;  // simulated point
 
     for (int i = 0; i < max_iters; i++) {
@@ -38,10 +37,10 @@ char point_in_set(const double re, const double im, int max_iters) {
         pt_im += im;
 
         if (pt_re*pt_re + pt_im*pt_im > 5) {
-            return 126 * i / max_iters;
+            return 200 * i / max_iters;
         }
     }
-    return 127;
+    return 255;
 }
 
 /**
@@ -51,7 +50,7 @@ char point_in_set(const double re, const double im, int max_iters) {
 #ifdef USING_CUDA
 __global__
 #endif
-void compute(Query q, char* data, int start, int stride) {
+void compute(Query q, unsigned char* data, int start, int stride) {
     const double x_scl = (q.x_end-q.x_start) / (double)q.width;
     const double y_scl = (q.y_end-q.y_start) / (double)q.height;
 
@@ -65,7 +64,7 @@ void compute(Query q, char* data, int start, int stride) {
         const double x = q.x_start + (double)px_x*x_scl;
         const double y = q.y_start + (double)px_y*y_scl;
 
-        char result = point_in_set(x, y, q.max_iters);
+        unsigned char result = point_color(x, y, q.max_iters);
         data[i] = result;
     }
 }

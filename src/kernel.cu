@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
         double x_start, x_end, y_start, y_end;
         std::cin >> x_start >> x_end >> y_start >> y_end;
 
-        char* data;
+        unsigned char* data;
         cudaMallocManaged(&data, width * height);
 
         q.x_start = x_start;

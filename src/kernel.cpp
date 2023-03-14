@@ -23,8 +23,8 @@ int main(int argc, char** argv) {
         double x_start, x_end, y_start, y_end;
         std::cin >> x_start >> x_end >> y_start >> y_end;
 
-        char* data;
-        data = (char*)malloc(width * height);
+        unsigned char* data;
+        data = (unsigned char*)malloc(width * height);
 
         q.x_start = x_start;
         q.x_end = x_end;

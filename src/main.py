@@ -25,7 +25,6 @@ def query_kernel(proc, width, height, x_start, x_end, y_start, y_end):
 
     img = np.frombuffer(proc.stdout.read(width*height), dtype=np.uint8).copy()
     img = img.reshape((height, width))
-    img[img == 127] = 255
 
     elapse = time.time() - start
     return img, elapse
