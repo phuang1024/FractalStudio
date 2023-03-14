@@ -1,5 +1,5 @@
 // Max iterations
-#define  ITERS  126
+#define  ITERS  128
 
 #include <iostream>
 #include <stdio.h>
@@ -23,9 +23,7 @@ __device__ char point_in_set(const double re, const double im) {
         pt_im += im;
 
         if (pt_re*pt_re + pt_im*pt_im > 5) {
-            if (i > 126)
-                i = 126;
-            return i;
+            return 126 * i / ITERS;
         }
     }
     return 127;
