@@ -5,11 +5,6 @@
 
 
 int main(int argc, char** argv) {
-    Query q;
-    q.width = width;
-    q.height = height;
-    q.max_iters = max_iters;
-
     while (true) {
         int width, height, max_iters;
         double x_start, x_end, y_start, y_end;
