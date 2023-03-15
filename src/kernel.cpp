@@ -5,27 +5,18 @@
 
 
 int main(int argc, char** argv) {
-    if (argc < 3) {
-        printf("Invalid CLI args. Read documentation for help.\n");
-        return 1;
-    }
-
-    const int width = std::stoi(argv[1]);
-    const int height = std::stoi(argv[2]);
-    const int max_iters = std::stoi(argv[3]);
-
-    Query q;
-    q.width = width;
-    q.height = height;
-    q.max_iters = max_iters;
-
     while (true) {
+        int width, height, max_iters;
         double x_start, x_end, y_start, y_end;
-        std::cin >> x_start >> x_end >> y_start >> y_end;
+        std::cin >> width >> height >> max_iters >> x_start >> x_end >> y_start >> y_end;
 
         unsigned char* data;
         data = (unsigned char*)malloc(width * height);
 
+        Query q;
+        q.width = width;
+        q.height = height;
+        q.max_iters = max_iters;
         q.x_start = x_start;
         q.x_end = x_end;
         q.y_start = y_start;

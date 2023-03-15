@@ -12,13 +12,13 @@ pygame.init()
 
 ROOT = Path(__file__).absolute().parent
 
-FONT = pygame.font.SysFont("ubuntu", 18)
+FONT = pygame.font.SysFont("ubuntu", 16)
 
 
-def query_kernel(proc, width, height, x_start, x_end, y_start, y_end):
+def query_kernel(proc, width, height, max_iters, x_start, x_end, y_start, y_end):
     start = time.time()
 
-    args = [x_start, x_end, y_start, y_end]
+    args = [width, height, max_iters, x_start, x_end, y_start, y_end]
     proc.stdin.write(" ".join(map(str, args)).encode())
     proc.stdin.write(b"\n")
     proc.stdin.flush()
@@ -60,12 +60,13 @@ def main():
     args = parser.parse_args()
     width = args.width
     height = args.height
+    max_iters = args.max_iters
 
     kernel_path = ROOT / f"kernel.{args.kernel}.out"
-    proc = Popen([kernel_path, str(width), str(height), str(args.max_iters)], stdin=PIPE, stdout=PIPE)
+    proc = Popen([kernel_path], stdin=PIPE, stdout=PIPE)
 
     if args.mode == "image":
-        img, elapse = query_kernel(proc, width, height, -2.5, 1.5, -2, 2)
+        img, elapse = query_kernel(proc, width, height, max_iters, -2.5, 1.5, -2, 2)
         cv2.imwrite("out.png", img)
         print(f"Time: {elapse*1000:.3f} ms")
 
@@ -89,16 +90,26 @@ def main():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
-                elif event.type == pygame.MOUSEBUTTONDOWN:
+                elif event.type == pygame.MOUSEBUTTONDOWN:  
                     if event.button == 4:
                         x_size *= 0.91
-                        changed = True
                     elif event.button == 5:
                         x_size /= 0.91
-                        changed = True
                     else:
                         drag_start_mouse = np.array(pygame.mouse.get_pos())
                         drag_start_center = center.copy()
+                    changed = True
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        max_iters += 1
+                    elif event.key == pygame.K_RIGHT:
+                        max_iters += 20
+                    elif event.key == pygame.K_DOWN:
+                        max_iters -= 1
+                    elif event.key == pygame.K_LEFT:
+                        max_iters -= 20
+                    max_iters = max(max_iters, 0)
+                    changed = True
 
             pressed = pygame.mouse.get_pressed()
             if any(pressed):
@@ -113,7 +124,7 @@ def main():
                 y_min = center[1] - y_size/2
                 y_max = center[1] + y_size/2
 
-                img, render_time = query_kernel(proc, width, height, x_min, x_max, y_min, y_max)
+                img, render_time = query_kernel(proc, width, height, max_iters, x_min, x_max, y_min, y_max)
                 img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
                 img = img.swapaxes(0, 1)
                 surface = pygame.surfarray.make_surface(img)
@@ -122,10 +133,11 @@ def main():
                 stats = [
                         f"X: {x_min:.4f} to {x_max:.4f}; range {format_number(x_size)}",
                         f"Y: {y_min:.4f} to {y_max:.4f}; range {format_number(y_size)}",
-                        f"Render time: {render_time*1000:.4f} ms"
+                        f"Render time: {render_time*1000:.4f} ms",
+                        f"Max iters: {max_iters}",
                 ]
                 for i, stat in enumerate(stats):
-                    y = 24 * (i+1)
+                    y = 21 * (i+1)
                     text = FONT.render(stat, True, (128, 128, 128))
                     window.blit(text, (18, y))
 
