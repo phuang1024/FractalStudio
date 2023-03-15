@@ -34,17 +34,19 @@ def format_number(num: float) -> str:
     """
     Based on order, appends milli, micro, etc to it.
     """
-    order = math.log10(num)
     suffixes = (
         (1e3, "kilo"),
         (1, ""),
         (1e-3, "milli"),
         (1e-6, "micro"),
         (1e-9, "nano"),
+        (1e-12, "pico"),
+        (1e-15, "femto"),
+        (1e-18, "atto"),
     )
 
     for thres, suf in suffixes:
-        if num > thres or suf == "nano":
+        if num > thres or suf == "atto":
             return f"{num/thres:.4f} {suf}"
 
     raise ValueError("This should not happen")
