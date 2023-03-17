@@ -1,9 +1,9 @@
 import argparse
-import math
-import sys
+import os
 import time
 from pathlib import Path
 from subprocess import Popen, PIPE
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 
 import cv2
 import numpy as np
