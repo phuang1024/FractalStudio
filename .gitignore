@@ -2,4 +2,5 @@
 *.out
 
 *.png
+*.img
 !/*.png

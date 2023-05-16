@@ -17,12 +17,12 @@ ll SAMPLES = (ll)1e8;
 constexpr double SAMPLE_BOUND = 10;
 constexpr double
     XMIN = -2.5,
-    XMAX = 1.5,
-    YMIN = -4,
-    YMAX = 4;
+    XMAX = 2.5,
+    YMIN = -1.25,
+    YMAX = 1.25;
 constexpr int
-    WIDTH = 1000,
-    HEIGHT = 2000;
+    WIDTH = 2000,
+    HEIGHT = 1000;
 
 
 int index(int x, int y) {

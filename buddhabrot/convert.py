@@ -5,8 +5,8 @@ from math import tanh
 import cv2
 import numpy as np
 
-WIDTH = 1000
-HEIGHT = 2000
+WIDTH = 2000
+HEIGHT = 1000
 
 
 def main():
