@@ -13,7 +13,7 @@ Use convert.py to convert it.
 using ll = long long;
 
 ll ITERS = 1000;
-constexpr ll SAMPLES = (ll)1e10;
+ll SAMPLES = (ll)1e8;
 constexpr double SAMPLE_BOUND = 10;
 constexpr double
     XMIN = -2.5,
@@ -81,12 +81,14 @@ double randf(double min, double max) {
  * argv: ./a.out [iters]
 */
 int main(int argc, char** argv) {
-    if (argc < 2) {
-        std::cout << "Usage: ./a.out [iters]" << std::endl;
+    if (argc < 3) {
+        std::cout << "Usage: ./a.out [iters] [samples]" << std::endl;
         return 1;
     }
     ITERS = std::stoi(argv[1]);
+    SAMPLES = std::stoi(argv[2]);
     std::cerr << "Iters is " << ITERS << std::endl;
+    std::cerr << "Samples is " << SAMPLES << std::endl;
 
     ll* image = new ll[WIDTH*HEIGHT];
     memset(image, 0, WIDTH*HEIGHT*sizeof(ll));
@@ -104,6 +106,7 @@ int main(int argc, char** argv) {
             update_image(x, y, image);
         }
     }
+    std::cout << std::endl;
 
     FILE* f = fopen("out.img", "wb");
     fwrite(image, sizeof(ll), WIDTH*HEIGHT, f);

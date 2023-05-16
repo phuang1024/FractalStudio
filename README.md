@@ -1,11 +1,15 @@
 # Mandelbrot
 
+Mandelbrot and related fractal rendering.
+
+## `/mandelbrot`
+
 Realtime visualization of the mandelbrot set.
 
-## General usage:
+### Usage
 
 ```bash
-cd /path/to/mandelbrot/src
+cd ./mandelbrot
 
 # If you have a CUDA gpu
 make cuda
@@ -22,7 +26,7 @@ python main.py live --width 1280 --height 720
 python main.py --kernel cpu
 ```
 
-## Options
+### Options
 
 - `mode`: `image` or `live`.
 - `--kernel`: `cpu` or `cuda` to set computing kernel. GPU is usually faster.
@@ -31,3 +35,27 @@ python main.py --kernel cpu
 - `--max-iters`: Max iters to simulate function. More iters is slower but more accurate.
 
 ![](https://github.com/phuang1024/mandelbrot/blob/main/mandelbrot.png?raw=true)
+
+## `/buddhabrot`
+
+Render the [buddhabrot](https://en.wikipedia.org/wiki/Buddhabrot)
+
+### Usage
+
+```bash
+cd ./buddhabrot
+
+make cpu
+
+# generate buddhabrot
+# Args are [iters] [samples]
+./a.out 1000 10000000
+python convert.py out.img buddhabrot.png
+
+# generate nebulabrot
+# calls a.out, convert.py, nebula.py many times.
+./nebula.sh
+```
+
+![](https://github.com/phuang1024/mandelbrot/blob/main/nebula.png?raw=true)
+![](https://github.com/phuang1024/mandelbrot/blob/main/buddha.png?raw=true)
