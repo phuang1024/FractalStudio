@@ -10,8 +10,8 @@ int main(int argc, char** argv) {
         double x_start, x_end, y_start, y_end;
         std::cin >> width >> height >> max_iters >> x_start >> x_end >> y_start >> y_end;
 
-        unsigned char* data;
-        cudaMallocManaged(&data, width * height);
+        unsigned int* data;
+        cudaMallocManaged(&data, width * height * sizeof(unsigned int));
 
         Query q;
         q.width = width;

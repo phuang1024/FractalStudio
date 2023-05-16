@@ -29,7 +29,7 @@ struct Query {
 #ifdef USING_CUDA
 __device__
 #endif
-unsigned char point_color(const FLOAT re, const FLOAT im, int max_iters) {
+unsigned int point_color(const FLOAT re, const FLOAT im, int max_iters) {
     FLOAT pt_re = 0, pt_im = 0;  // simulated point
 
     for (int i = 0; i < max_iters; i++) {
@@ -53,7 +53,7 @@ unsigned char point_color(const FLOAT re, const FLOAT im, int max_iters) {
 #ifdef USING_CUDA
 __global__
 #endif
-void compute(Query q, unsigned char* data, int start, int stride) {
+void compute(Query q, unsigned int* data, int start, int stride) {
     const FLOAT x_scl = (q.x_end-q.x_start) / (FLOAT)q.width;
     const FLOAT y_scl = (q.y_end-q.y_start) / (FLOAT)q.height;
 
@@ -67,7 +67,7 @@ void compute(Query q, unsigned char* data, int start, int stride) {
         const FLOAT x = q.x_start + (FLOAT)px_x*x_scl;
         const FLOAT y = q.y_start + (FLOAT)px_y*y_scl;
 
-        unsigned char result = point_color(x, y, q.max_iters);
+        unsigned int result = point_color(x, y, q.max_iters);
         data[i] = result;
     }
 }

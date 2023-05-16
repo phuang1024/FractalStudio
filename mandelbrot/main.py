@@ -23,7 +23,7 @@ def query_kernel(proc, width, height, max_iters, x_start, x_end, y_start, y_end)
     proc.stdin.write(b"\n")
     proc.stdin.flush()
 
-    img = np.frombuffer(proc.stdout.read(width*height), dtype=np.uint8).copy()
+    img = np.frombuffer(proc.stdout.read(width*height), dtype=np.uint32).copy()
     img = img.reshape((height, width))
 
     elapse = time.time() - start
@@ -55,7 +55,7 @@ def format_number(num: float) -> str:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("mode", choices=["image", "live"])
-    parser.add_argument("--kernel", default="cuda", choices=["cuda", "cpu"])
+    parser.add_argument("--kernel", default="kernel.cuda.out", help="Path to kernel executable.")
     parser.add_argument("--width", type=int, default=1280)
     parser.add_argument("--height", type=int, default=720)
     parser.add_argument("--max-iters", type=int, default=256)
@@ -64,7 +64,7 @@ def main():
     height = args.height
     max_iters = args.max_iters
 
-    kernel_path = ROOT / f"kernel.{args.kernel}.out"
+    kernel_path = ROOT / args.kernel
     proc = Popen([kernel_path], stdin=PIPE, stdout=PIPE)
 
     if args.mode == "image":
