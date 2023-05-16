@@ -2,4 +2,4 @@
 *.out
 
 *.png
-!/out.png
+!/*.png
