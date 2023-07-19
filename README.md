@@ -34,7 +34,7 @@ python main.py --kernel cpu
 - `--height`: Height
 - `--max-iters`: Max iters to simulate function. More iters is slower but more accurate.
 
-![](https://github.com/phuang1024/mandelbrot/blob/main/mandelbrot.png?raw=true)
+![](./mandelbrot.png)
 
 ## `/buddhabrot`
 
@@ -57,5 +57,5 @@ python convert.py out.img buddhabrot.png
 ./nebula.sh
 ```
 
-![](https://github.com/phuang1024/mandelbrot/blob/main/nebula.png?raw=true)
-![](https://github.com/phuang1024/mandelbrot/blob/main/buddha.png?raw=true)
+![](./nebula.png)
+![](./buddha.png)
