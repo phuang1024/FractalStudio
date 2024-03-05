@@ -14,14 +14,15 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("action", choices={"viewer", "render"})
     parser.add_argument("--alg", choices=algorithms.keys(), required=True)
-    parser.add_argument("--init-args", nargs="*", help="Format: arg=val")
+    # TODO this is unwieldy for strings.
+    parser.add_argument("--init-args", nargs="*", help="Format: arg='str'  arg=2")
     args = parser.parse_args()
 
     init_args = {}
     if args.init_args:
         for arg in args.init_args:
             k, v = arg.split("=")
-            init_args[k] = v
+            init_args[k] = eval(v)
     alg = algorithms[args.alg](**init_args)
 
     if args.action == "viewer":

@@ -26,5 +26,5 @@ class ImageResize(Fractal):
 
     def render(self, resolution):
         # Simulate long render time
-        time.sleep(1)
+        time.sleep(0.1)
         return cv2.resize(self.image, resolution)
