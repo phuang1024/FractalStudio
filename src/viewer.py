@@ -1,6 +1,7 @@
 import time
 from threading import Thread
 
+import cv2
 import pygame
 
 from fractal import Fractal, ProgressiveType
@@ -9,9 +10,26 @@ from utils import Clock, ViewerState
 pygame.init()
 
 
-def render_worker(algorithm: Fractal, state: ViewerState):
+def render_worker(alg: Fractal, state: ViewerState):
+    last_window_changed = -1
+
+    upres_iter = 0
+
     while state.run:
-        state.render_result = algorithm.render(state.res)
+        if alg.progressive == ProgressiveType.NONE:
+            if state.window_changed != last_window_changed:
+                state.render_result = alg.render(state.res)
+
+        elif alg.progressive == ProgressiveType.UPRES:
+            if state.window_changed != last_window_changed:
+                upres_iter = 5
+            if upres_iter >= 0:
+                scale = 2 ** upres_iter
+                res = (state.res[0] // scale, state.res[1] // scale)
+                state.render_result = cv2.resize(alg.render(res), state.res)
+                upres_iter -= 1
+
+        last_window_changed = state.window_changed
 
 
 def viewer(args, algorithm):
@@ -30,8 +48,13 @@ def viewer(args, algorithm):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 state.run = False
+            elif event.type == pygame.VIDEORESIZE:
+                # TODO this should be more general check.
+                state.window_changed += 1
 
         pygame.display.update()
+
+        state.res = window.get_size()
 
         if clock_redraw.tick():
             if state.render_result is not None:

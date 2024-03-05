@@ -1,22 +1,31 @@
 import argparse
 
-from algs.test import TestFractal
+from algs.test import *
 from viewer import viewer
+
+
+algorithms = {
+    "test_solid": SolidColor,
+    "test_image": ImageResize,
+}
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("action", choices={"viewer", "render"})
-    parser.add_argument("--alg", choices={"test"}, required=True)
+    parser.add_argument("--alg", choices=algorithms.keys(), required=True)
+    parser.add_argument("--init-args", nargs="*", help="Format: arg=val")
     args = parser.parse_args()
 
-    classes = {
-        "test": TestFractal,
-    }
-    algorithm = classes[args.alg]()
+    init_args = {}
+    if args.init_args:
+        for arg in args.init_args:
+            k, v = arg.split("=")
+            init_args[k] = v
+    alg = algorithms[args.alg](**init_args)
 
     if args.action == "viewer":
-        viewer(args, algorithm)
+        viewer(args, alg)
 
 
 if __name__ == "__main__":

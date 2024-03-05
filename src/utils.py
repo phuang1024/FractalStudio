@@ -23,11 +23,13 @@ class ViewerState:
     """
 
     run: bool = True
+    window_changed: int = 0
+    """This is incremented by 1 every time user changes window, to trigger rerender."""
 
     render_result: np.ndarray = None
 
     res: tuple[int, int] = (1280, 720)
     pos: tuple[float, float] = (0, 0)
-    """Position of top left XY in units."""
+    """Position of center XY in units."""
     scale: float = 1
     """Number of units the X direction spans."""
