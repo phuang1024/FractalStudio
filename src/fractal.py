@@ -11,6 +11,8 @@ from enum import Enum
 
 import numpy as np
 
+from utils import Window
+
 
 class ProgressiveType(Enum):
     """
@@ -38,7 +40,7 @@ class Fractal:
         Do any reset procedures here.
         """
 
-    def render(self, res: tuple[int, int], **kwargs) -> np.ndarray:
+    def render(self, window: Window, **kwargs) -> np.ndarray:
         """
         Return np array of shape (res[1], res[0], 3), dtype uint8.
         """

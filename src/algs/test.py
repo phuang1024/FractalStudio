@@ -11,8 +11,8 @@ from fractal import *
 
 
 class SolidColor(Fractal):
-    def render(self, resolution):
-        img = np.zeros((resolution[1], resolution[0], 3), dtype=np.uint8)
+    def render(self, window):
+        img = np.zeros((window.res[1], window.res[0], 3), dtype=np.uint8)
         img[..., 0] = 255
         return img
 
@@ -24,7 +24,7 @@ class ImageResize(Fractal):
         self.path = path
         self.image = cv2.imread(path)[..., ::-1]
 
-    def render(self, resolution):
+    def render(self, window):
         # Simulate long render time
         time.sleep(0.1)
-        return cv2.resize(self.image, resolution)
+        return cv2.resize(self.image, window.res)
