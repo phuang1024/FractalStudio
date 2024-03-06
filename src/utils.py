@@ -2,6 +2,9 @@ import time
 from dataclasses import dataclass
 
 import numpy as np
+import torch
+
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class Clock:

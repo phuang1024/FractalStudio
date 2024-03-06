@@ -9,5 +9,5 @@ class Mandelbrot(Fractal):
     def __init__(self, iters: int = 100):
         self.iters = iters
 
-    def render(self, resolution):
+    def render(self, window):
         pass
