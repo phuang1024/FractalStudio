@@ -1,3 +1,4 @@
+import os
 import time
 from copy import copy
 from threading import Thread
@@ -58,6 +59,9 @@ def viewer(args, algorithm):
 
     window = pygame.display.set_mode((1280, 720), pygame.RESIZABLE)
     pygame.display.set_caption("FractalStudio")
+    if os.path.isfile("icon.jpg"):
+        icon = pygame.image.load("icon.jpg")
+        pygame.display.set_icon(icon)
 
     state = ViewerState()
     worker_thread = Thread(target=render_worker, args=(algorithm, state))
