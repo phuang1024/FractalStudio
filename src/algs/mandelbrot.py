@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 
 from fractal import *
@@ -11,7 +13,11 @@ class Mandelbrot(Fractal):
         self.iters = iters
         self.draw_gradient = draw_gradient
 
+        self.render_time = 0
+
     def render(self, window):
+        time_start = time.time()
+
         result = calc_mandelbrot(window, self.iters)
         result = result.cpu().numpy()
 
@@ -28,7 +34,14 @@ class Mandelbrot(Fractal):
         else:
             image[result == 0] = 255
 
+        self.render_time = time.time() - time_start
+
         return image
+
+    def get_stats(self):
+        return [
+            f"Render time: {self.render_time*1000:.3f}ms"
+        ]
 
 
 def calc_mandelbrot(window, iters):

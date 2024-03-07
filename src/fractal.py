@@ -8,7 +8,7 @@ Fractal algorithm base class.
 """
 
 from enum import Enum
-from typing import Any
+from typing import Sequence
 
 import numpy as np
 
@@ -70,8 +70,8 @@ class Fractal:
         """
         raise NotImplementedError
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Sequence[str]:
         """
         Return dict of stats to display.
         """
-        return {}
+        return []

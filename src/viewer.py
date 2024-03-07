@@ -11,6 +11,8 @@ from utils import Clock, ViewerState
 
 pygame.init()
 
+FONT = pygame.font.SysFont("courier", 16)
+
 UPRES_STEPS = 3
 
 
@@ -52,7 +54,7 @@ def render_worker(alg: Fractal, state: ViewerState):
 
 
 def viewer(args, algorithm):
-    clock_redraw = Clock(30)
+    clock_redraw = Clock(15)
 
     window = pygame.display.set_mode((1280, 720), pygame.RESIZABLE)
     pygame.display.set_caption("FractalStudio")
@@ -61,10 +63,12 @@ def viewer(args, algorithm):
     worker_thread = Thread(target=render_worker, args=(algorithm, state))
     worker_thread.start()
 
+    stats_enabled = True
+
     # Store state at mousedown.
     click_mouse_pos = None
     click_window_pos = None
-    # Updated every iter. For performance.
+    # Updated every iter.
     last_mouse_pos = None
 
     while state.run:
@@ -78,6 +82,8 @@ def viewer(args, algorithm):
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
                     state.run = False
+                elif event.key == pygame.K_s:
+                    stats_enabled = not stats_enabled
 
             elif event.type == pygame.VIDEORESIZE:
                 window_changed = True
@@ -110,9 +116,14 @@ def viewer(args, algorithm):
 
         if clock_redraw.tick():
             if state.render_result is not None:
-                # convert np array to pygame surface
+                # Convert np array to pygame surface
                 render = pygame.surfarray.make_surface(state.render_result.swapaxes(0, 1))
                 window.blit(render, (0, 0))
+
+                # Draw stats
+                if stats_enabled:
+                    stats = algorithm.get_stats()
+                    draw_stats(window, stats)
 
         last_mouse_pos = mouse_pos
 
@@ -121,3 +132,18 @@ def viewer(args, algorithm):
         # TODO implement draw stats.
 
     pygame.quit()
+
+
+def draw_stats(window, stats):
+    max_width = max(FONT.render(stat, True, (255, 255, 255)).get_width() for stat in stats)
+    rect = pygame.Surface((max_width + 20, 20 * len(stats) + 15))
+    rect.fill((0, 0, 0))
+    rect.set_alpha(170)
+    window.blit(rect, (10, 10))
+
+    x = 20
+    y = 20
+    for stat in stats:
+        text = FONT.render(stat, True, (255, 255, 255))
+        window.blit(text, (x, y))
+        y += 20

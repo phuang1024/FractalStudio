@@ -1,3 +1,5 @@
+import time
+
 import cv2
 import numpy as np
 
@@ -16,8 +18,14 @@ class Buddhabrot(Fractal):
         self.exposure = 1.5
         self.result = None
 
+        self.samples = 0
+        self.time_start = time.time()
+
     def new_window(self, window):
         self.result = window.blank_image(dtype=np.uint32)[..., 0]
+
+        self.time_start = time.time()
+        self.samples = 0
 
     def render(self, window):
         assert self.result is not None
@@ -26,7 +34,7 @@ class Buddhabrot(Fractal):
         batch_size = self.batch_size
         if self.iter_num < 5:
             batch_size = self.batch_size // 10
-        calc_buddhabrot(self.iters, batch_size, window, self.result)
+        self.samples += calc_buddhabrot(self.iters, batch_size, window, self.result)
 
         intensity = result_to_image(self.result, self.exposure)
         s = 1 - intensity
@@ -37,10 +45,19 @@ class Buddhabrot(Fractal):
 
         return image
 
+    def get_stats(self):
+        return [
+            f"Render time: {time.time() - self.time_start:.1f}s",
+            f"Samples: {self.samples / 1e6:.0f}M",
+            f"Samples rate: {self.samples / (time.time() - self.time_start) / 1000:.0f}K/s",
+        ]
 
-def calc_buddhabrot(iters, batch_size, window, result):
+
+def calc_buddhabrot(iters, batch_size, window, result) -> int:
     """
     Add results in place to ``result``.
+
+    Returns number of samples that escaped.
     """
     # Sample normal dist of complex numbers
     c_values = np.random.normal(size=(batch_size, 2))
@@ -74,6 +91,8 @@ def calc_buddhabrot(iters, batch_size, window, result):
         coords = coords[in_bounds]
         coords = coords.cpu().numpy()
         result[coords[:, 1], coords[:, 0]] += 1
+
+    return not_in_set.sum().item()
 
 
 def result_to_image(result, exposure):
