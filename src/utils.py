@@ -45,3 +45,31 @@ class ViewerState:
     render_result: np.ndarray = None
 
     window: Window = Window()
+
+
+def window_to_coords(window: Window) -> torch.Tensor:
+    """
+    Generate grid of coordinates corresponding to each pixel in the window.
+
+    i.e. ret[y][x] = x + y*j
+
+    ret.shape = (window.res[1], window.res[0])
+
+    On default device.
+    """
+    x_size = window.scale
+    y_size = window.scale * window.res[1] / window.res[0]
+    x = torch.linspace(
+        window.pos[0] - x_size / 2,
+        window.pos[0] + x_size / 2,
+        window.res[0]
+    )
+    y = torch.linspace(
+        window.pos[1] - y_size / 2,
+        window.pos[1] + y_size / 2,
+        window.res[1]
+    )
+    y, x = torch.meshgrid(y, x)
+    x = x.to(torch.complex64)
+    y = y.to(torch.complex64)
+    return x + y * 1j

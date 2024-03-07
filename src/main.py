@@ -1,10 +1,12 @@
 import argparse
 
+from algs.mandelbrot import Mandelbrot
 from algs.test import *
 from viewer import viewer
 
 
 algorithms = {
+    "mandelbrot": Mandelbrot,
     "test_solid": SolidColor,
     "test_image": ImageResize,
 }
