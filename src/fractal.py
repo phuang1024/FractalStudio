@@ -8,6 +8,7 @@ Fractal algorithm base class.
 """
 
 from enum import Enum
+from typing import Any
 
 import numpy as np
 
@@ -48,6 +49,8 @@ class Fractal:
     """
 
     progressive = ProgressiveType.NONE
+    iter_num: int = 0
+    """Iter number since last view window change. Set by render worker."""
 
     def __init__(self, **kwargs):
         pass
@@ -66,3 +69,9 @@ class Fractal:
         Return np array of shape (res[1], res[0], 3), dtype uint8.
         """
         raise NotImplementedError
+
+    def get_stats(self) -> dict[str, Any]:
+        """
+        Return dict of stats to display.
+        """
+        return {}

@@ -4,13 +4,11 @@ import numpy as np
 from fractal import *
 from utils import *
 
-from algs.mandelbrot import calc_mandelbrot
-
 
 class Buddhabrot(Fractal):
     progressive = ProgressiveType.SAMPLES
 
-    def __init__(self, iters: int = 100, batch_size: int = 100000, hue: float = 0.69):
+    def __init__(self, iters: int = 100, batch_size: int = int(1e6), hue: float = 0.69):
         self.iters = iters
         self.batch_size = batch_size
         self.hue = hue
@@ -25,15 +23,12 @@ class Buddhabrot(Fractal):
         assert self.result is not None
 
         # Render
-        calc_buddhabrot(self.iters, self.batch_size, window, self.result)
+        batch_size = self.batch_size
+        if self.iter_num < 5:
+            batch_size = self.batch_size // 10
+        calc_buddhabrot(self.iters, batch_size, window, self.result)
 
-        # Transform to image
-        intensity = self.result
-        intensity = np.clip(intensity, 0, np.max(intensity) * 0.8)
-        intensity = intensity / np.max(intensity)
-        intensity = np.tanh(intensity * self.exposure)
-        intensity = intensity / np.max(intensity)
-
+        intensity = result_to_image(self.result, self.exposure)
         s = 1 - intensity
         v = intensity
         hsv_image = np.stack([np.ones_like(intensity) * self.hue, s, v], axis=-1)
@@ -79,3 +74,15 @@ def calc_buddhabrot(iters, batch_size, window, result):
         coords = coords[in_bounds]
         coords = coords.cpu().numpy()
         result[coords[:, 1], coords[:, 0]] += 1
+
+
+def result_to_image(result, exposure):
+    """
+    Convert result (int array of z value counts) to RGB image.
+    """
+    intensity = result
+    intensity = np.clip(intensity, 0, np.max(intensity) * 0.8)
+    intensity = intensity / np.max(intensity)
+    intensity = np.tanh(intensity * exposure)
+    intensity = intensity / np.max(intensity)
+    return intensity

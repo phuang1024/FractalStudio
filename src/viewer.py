@@ -16,6 +16,7 @@ UPRES_STEPS = 3
 
 def render_worker(alg: Fractal, state: ViewerState):
     last_window_changed = -1
+    iter_num = 0
 
     upres_iter = 0
 
@@ -23,6 +24,7 @@ def render_worker(alg: Fractal, state: ViewerState):
         window_changed = state.window_changed != last_window_changed
         if window_changed:
             alg.new_window(state.window)
+            iter_num = 0
 
         if alg.progressive == ProgressiveType.NONE:
             if window_changed:
@@ -44,6 +46,9 @@ def render_worker(alg: Fractal, state: ViewerState):
 
         if window_changed:
             last_window_changed = state.window_changed
+
+        alg.iter_num = iter_num
+        iter_num += 1
 
 
 def viewer(args, algorithm):
@@ -112,5 +117,7 @@ def viewer(args, algorithm):
         last_mouse_pos = mouse_pos
 
         pygame.display.update()
+
+        # TODO implement draw stats.
 
     pygame.quit()
