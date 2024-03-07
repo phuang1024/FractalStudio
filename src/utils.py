@@ -47,7 +47,7 @@ class ViewerState:
     window: Window = Window()
 
 
-def window_to_coords(window: Window) -> torch.Tensor:
+def window_to_coords(window: Window, dtype=torch.complex128) -> torch.Tensor:
     """
     Generate grid of coordinates corresponding to each pixel in the window.
 
@@ -70,6 +70,6 @@ def window_to_coords(window: Window) -> torch.Tensor:
         window.res[1]
     )
     y, x = torch.meshgrid(y, x)
-    x = x.to(torch.complex64)
-    y = y.to(torch.complex64)
+    x = x.to(dtype)
+    y = y.to(dtype)
     return x + y * 1j
