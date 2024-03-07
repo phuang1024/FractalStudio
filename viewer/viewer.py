@@ -139,6 +139,9 @@ def viewer(args, algorithm):
 
 
 def draw_stats(window, stats):
+    if len(stats) == 0:
+        return
+
     max_width = max(FONT.render(stat, True, (255, 255, 255)).get_width() for stat in stats)
     rect = pygame.Surface((max_width + 20, 20 * len(stats) + 15))
     rect.fill((0, 0, 0))
