@@ -1,5 +1,7 @@
 # FractalStudio
 
+![](https://github.com/phuang1024/FractalStudio/tree/master/gallery/ViewerBuddhabrot.jpg?raw=true)
+
 Cuda accelerated fractal rendering.
 
 [Gallery](https://github.com/phuang1024/FractalStudio/tree/master/gallery)
