@@ -1,5 +1,6 @@
 import argparse
 
+from algs.buddhabrot import Buddhabrot
 from algs.mandelbrot import Mandelbrot
 from algs.test import *
 from viewer import viewer
@@ -7,6 +8,7 @@ from viewer import viewer
 
 algorithms = {
     "mandelbrot": Mandelbrot,
+    "buddhabrot": Buddhabrot,
     "test_solid": SolidColor,
     "test_image": ImageResize,
 }

@@ -20,15 +20,17 @@ def render_worker(alg: Fractal, state: ViewerState):
     upres_iter = 0
 
     while state.run:
+        window_changed = state.window_changed != last_window_changed
+        if window_changed:
+            alg.new_window(state.window)
+
         if alg.progressive == ProgressiveType.NONE:
-            if state.window_changed != last_window_changed:
+            if window_changed:
                 state.render_result = alg.render(state.window)
-                last_window_changed = state.window_changed
 
         elif alg.progressive == ProgressiveType.UPRES:
-            if state.window_changed != last_window_changed:
+            if window_changed:
                 upres_iter = UPRES_STEPS
-                last_window_changed = state.window_changed
             if upres_iter >= 0:
                 scale = 2 ** upres_iter
                 res = (state.window.res[0] // scale, state.window.res[1] // scale)
@@ -36,6 +38,12 @@ def render_worker(alg: Fractal, state: ViewerState):
                 new_window.res = res
                 state.render_result = cv2.resize(alg.render(new_window), state.window.res)
                 upres_iter -= 1
+
+        elif alg.progressive == ProgressiveType.SAMPLES:
+            state.render_result = alg.render(state.window)
+
+        if window_changed:
+            last_window_changed = state.window_changed
 
 
 def viewer(args, algorithm):

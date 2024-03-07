@@ -15,7 +15,7 @@ class Mandelbrot(Fractal):
         result = calc_mandelbrot(window, self.iters)
         result = result.cpu().numpy()
 
-        image = np.zeros(window.res[::-1], dtype=np.uint8)
+        image = window.blank_image()
 
         if self.draw_gradient:
             # Normalize to 0-1

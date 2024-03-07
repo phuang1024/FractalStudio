@@ -26,10 +26,27 @@ class Window:
     """
 
     res: tuple[int, int] = (1280, 720)
+    """X, Y resolution."""
     pos: tuple[float, float] = (0, 0)
     """Position of center XY in units."""
     scale: float = 5
     """Number of units the X direction spans."""
+
+    def blank_image(self, dtype=np.uint8) -> np.ndarray:
+        """
+        Return image of shape (res[1], res[0], 3) filled with 0.
+        """
+        return np.zeros((*self.res[::-1], 3), dtype=dtype)
+
+    def coord_to_px(self, x, y):
+        """
+        Convert from window coords to pixel coords.
+        """
+        x_px = (x - self.pos[0]) / self.scale * self.res[0] + self.res[0] / 2
+        y_px = (y - self.pos[1]) / self.scale * self.res[1] + self.res[1] / 2
+        x_px = int(x_px)
+        y_px = int(y_px)
+        return x_px, y_px
 
 
 @dataclass
@@ -69,7 +86,7 @@ def window_to_coords(window: Window, dtype=torch.complex128) -> torch.Tensor:
         window.pos[1] + y_size / 2,
         window.res[1]
     )
-    y, x = torch.meshgrid(y, x)
+    y, x = torch.meshgrid(y, x, indexing="ij")
     x = x.to(dtype)
     y = y.to(dtype)
     return x + y * 1j

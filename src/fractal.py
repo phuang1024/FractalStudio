@@ -28,16 +28,37 @@ class ProgressiveType(Enum):
 
 
 class Fractal:
+    """
+    Fractal algorithm base class.
+
+    Progressive rendering paradigms:
+
+    None:
+    Do the full render in ``render`` and return the image.
+
+    Upres:
+    ``render`` is called multiple times at increasing resolutions.
+    Do the full render and return the image each time, at the requested resolution.
+
+    Samples:
+    Do reset procedures in ``new_window``.
+    ``render`` is called multiple times at the same resolution, which may possibly
+    represent adding samples to the current viewing window (as opposed to starting a new render).
+    Each time, return the accumulated image so far.
+    """
+
     progressive = ProgressiveType.NONE
 
     def __init__(self, **kwargs):
         pass
 
-    def new_window(self):
+    def new_window(self, window: Window):
         """
         Called when a new viewing window (i.e. x/y bounds and resolution) is requested.
 
         Do any reset procedures here.
+
+        It is guarenteed that this is called before the first call to ``render``.
         """
 
     def render(self, window: Window, **kwargs) -> np.ndarray:
