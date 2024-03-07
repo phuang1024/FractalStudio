@@ -7,6 +7,8 @@ Cuda accelerated fractal rendering.
 
 ## Viewer
 
+The viewer is an interactive GUI fractal renderer.
+
 The viewer uses PyTorch cuda vector code to render fractals efficiently with
 only python.
 

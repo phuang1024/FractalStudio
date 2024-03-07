@@ -1,1 +1,9 @@
 __pycache__
+
+*.o
+*.out
+
+*.png
+*.jpg
+*.img
+!/examples/*
