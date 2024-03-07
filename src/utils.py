@@ -28,7 +28,7 @@ class Window:
     res: tuple[int, int] = (1280, 720)
     pos: tuple[float, float] = (0, 0)
     """Position of center XY in units."""
-    scale: float = 1
+    scale: float = 5
     """Number of units the X direction spans."""
 
 
