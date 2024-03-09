@@ -9,9 +9,15 @@ from utils import *
 class Mandelbrot(Fractal):
     progressive = ProgressiveType.UPRES
 
-    def __init__(self, iters: int = 100, draw_gradient: bool = True):
+    def __init__(self, iters: int = 100, gradient_type: str = "color"):
+        """
+        gradient_type:
+            "none": Black and white.
+            "gray": Gray scale.
+            "color": Color gradient.
+        """
         self.iters = iters
-        self.draw_gradient = draw_gradient
+        self.gradient_type = gradient_type
 
         self.render_time = 0
 
@@ -21,18 +27,14 @@ class Mandelbrot(Fractal):
         result = calc_mandelbrot(window, self.iters)
         result = result.cpu().numpy()
 
-        image = window.blank_image()
-
-        if self.draw_gradient:
-            # Normalize to 0-1
-            result = result / self.iters
-            # Apply gradient
-            result = np.log(result + 1)
-            result = result * 255
-            result = result.astype(np.uint8)
-            image = result
-        else:
+        if self.gradient_type == "none":
+            image = window.blank_image()
             image[result == 0] = 255
+        else:
+            # Normalize to 0 to 255
+            image = (result / self.iters * 255).astype(np.uint8)
+            if self.gradient_type == "gray":
+                image = np.stack([image, image, image], axis=-1)
 
         self.render_time = time.time() - time_start
 
