@@ -1,5 +1,5 @@
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import numpy as np
 import torch
@@ -61,7 +61,7 @@ class ViewerState:
 
     render_result: np.ndarray = None
 
-    window: Window = Window()
+    window: Window = field(default_factory=Window)
 
 
 def window_to_coords(window: Window, dtype=torch.complex128) -> torch.Tensor:
