@@ -52,11 +52,20 @@ def color_buddha(buddha):
     iters = interp(iters, np.min(iters), np.max(iters), 0, 1, clamp=True)
 
     for ch in range(3):
-        img[..., ch] = interp(iters, 0.3, 0.6, BLUE[ch], GREEN[ch], clamp=True)
-        img[..., ch] *= interp(iters, 0.2, 0.6, 0, 1, clamp=True)
+        img[..., ch] = interp(iters, 0.7, 0.8, BLUE[ch], GREEN[ch], clamp=True)
+        img[..., ch] *= interp(iters, 0.6, 0.8, 0, 1, clamp=True)
     img[buddha < 0] = (0, 0, 0)
 
     return img
+
+
+def color_both(mandel, buddha):
+    """
+    Both on opposite corners.
+    """
+    mandel = color_mandel(mandel)
+    buddha = color_buddha(buddha)
+    return mandel + buddha[::-1, ::-1]
 
 
 def read_image(file, width, height):
@@ -74,8 +83,12 @@ def main():
     mandel = read_image("mandelbrot.img", args.width, args.height)
     buddha = read_image("buddhabrot.img", args.width, args.height)
 
-    img = color_mandel(mandel)
+    # Remove weird line at im = 0 in buddhabrot
+    #buddha[0] = buddha[1]
+
+    #img = color_mandel(mandel)
     #img = color_buddha(buddha)
+    img = color_both(mandel, buddha)
 
     img = np.clip(img.astype(np.uint8), 0, 255)
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
