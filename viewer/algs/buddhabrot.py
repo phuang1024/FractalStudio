@@ -10,7 +10,7 @@ from utils import *
 class Buddhabrot(Fractal):
     progressive = ProgressiveType.SAMPLES
 
-    def __init__(self, iters: int = 100, batch_size: int = int(1e6), hue: float = 0.69):
+    def __init__(self, iters: int = 1000, batch_size: int = int(1e6), hue: float = 0.69):
         self.iters = iters
         self.batch_size = batch_size
         self.hue = hue
@@ -66,10 +66,10 @@ def calc_buddhabrot(iters, batch_size, window, result) -> int:
 
     Returns number of samples that escaped.
     """
-    # Sample normal dist of complex numbers
-    c_values = np.random.normal(size=(batch_size, 2))
+    # Sample complex numbers
+    c_values = np.random.uniform(-2, 2, size=(batch_size, 2))
     c_values = c_values[:, 0] + c_values[:, 1] * 1j
-    c_values = torch.tensor(c_values, dtype=torch.complex128, device=DEVICE)
+    c_values = torch.tensor(c_values, dtype=torch.complex64, device=DEVICE)
 
     # Iterate mandelbrot to find which ones escape
     z_values = torch.zeros_like(c_values, device=DEVICE)

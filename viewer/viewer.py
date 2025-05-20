@@ -102,6 +102,9 @@ def viewer(args, algorithm):
                     click_mouse_pos = np.array(event.pos)
                     click_window_pos = state.window.pos
 
+            elif event.type == pygame.MOUSEBUTTONUP:
+                window_changed = True
+
         # Handle mouse drag
         mouse_pressed = pygame.mouse.get_pressed()
         mouse_pos = np.array(pygame.mouse.get_pos())
