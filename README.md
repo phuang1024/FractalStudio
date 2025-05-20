@@ -1,6 +1,6 @@
 # FractalStudio
 
-![](https://github.com/phuang1024/FractalStudio/blob/master/gallery/ViewerBuddhabrot.jpg?raw=true)
+![](./gallery/ViewerBuddhabrot.jpg?raw=true)
 
 Cuda accelerated fractal rendering.
 
@@ -85,3 +85,10 @@ python convert.py out.img buddhabrot.png
 ### `render/hyprbrot/`
 
 Hyprland themed render of Mandelbrot and Buddhabrot.
+
+# Gallery
+
+![](./gallery/buddhabrot.jpg?raw=true)
+![](./gallery/mandelbrot.jpg?raw=true)
+![](./gallery/nebulabrot.jpg?raw=true)
+![](./gallery/HyprbrotProfile.jpg?raw=true)
