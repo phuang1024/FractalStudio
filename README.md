@@ -81,3 +81,7 @@ python convert.py out.img buddhabrot.png
 # calls a.out, convert.py, nebula.py many times and compiles the final image.
 ./nebula.sh
 ```
+
+### `render/hyprbrot/`
+
+Hyprland themed render of Mandelbrot and Buddhabrot.
