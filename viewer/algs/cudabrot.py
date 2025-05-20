@@ -12,29 +12,43 @@ from algs.buddhabrot import Buddhabrot
 PARENT = os.path.dirname(os.path.abspath(__file__))
 
 
-class Cudabrot(Buddhabrot):
-    num_threads = 16 * 32
+class CudaWorker:
+    """
+    Wrapper around CUDA worker subprocess.
+    """
 
-    def __init__(self, iters: int = 1000, batch_size: int = int(1e4), hue: float = 0.69):
-        self.iters = iters
-        self.batch_size = batch_size
-        self.hue = hue
+    num_threads = 16 * 16
 
-        self.exposure = 1.5
-        self.result = None
-
+    def __init__(self):
         self.process = Popen([os.path.join(PARENT, "cudabrot.out")], stdin=PIPE, stdout=PIPE)
 
-    def render_samples(self, window):
+    def query(self, window, iters, batch_size):
         assert self.process.returncode is None
 
-        self.process.stdin.write(f"{window.res[0]} {window.res[1]} {self.iters} {self.batch_size} {window.xmin} {window.xmax} {window.ymin} {window.ymax}\n".encode())
+        self.process.stdin.write(
+            f"{window.res[0]} {window.res[1]} {iters} {batch_size} {window.xmin} {window.xmax} {window.ymin} {window.ymax}\n".encode()
+        )
         self.process.stdin.flush()
         # Read result from process (int32).
         data = self.process.stdout.read(window.res[0] * window.res[1] * 4)
         data = np.frombuffer(data, dtype=np.int32)
+
         if len(data) == window.res[0] * window.res[1]:
             # Window might have changed while kernel was running.
             data = data.reshape(window.res[1], window.res[0])
-            self.result += data.astype(np.uint32)
-            self.samples += self.batch_size * self.num_threads
+            return data
+
+        else:
+            return None
+
+
+class Cudabrot(Buddhabrot):
+    def __init__(self, iters: int = 1000, batch_size: int = int(1e4), hue: float = 0.69):
+        super().__init__(iters, batch_size, hue)
+        self.worker = CudaWorker()
+
+    def render_samples(self, window, batch_size):
+        data = self.worker.query(window, self.iters, batch_size)
+        if data is not None:
+            self.result += data
+            self.samples += batch_size * self.worker.num_threads

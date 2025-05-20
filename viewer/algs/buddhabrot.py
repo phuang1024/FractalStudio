@@ -22,25 +22,25 @@ class Buddhabrot(Fractal):
         self.time_start = time.time()
 
     def new_window(self, window):
-        self.result = window.blank_image(dtype=np.uint32)[..., 0]
+        self.result = window.blank_image(dtype=np.int32)[..., 0]
 
         self.time_start = time.time()
         self.samples = 0
 
-    def render_samples(self, window):
+    def render_samples(self, window, batch_size):
         """
         Update self.result and self.samples in place.
         """
-        batch_size = self.batch_size
-        if self.iter_num < 5:
-            batch_size = self.batch_size // 10
         self.samples += calc_buddhabrot(self.iters, batch_size, window, self.result)
 
     def render(self, window):
         assert self.result is not None
 
         # Call render algorithm.
-        self.render_samples(window)
+        batch_size = self.batch_size
+        if self.iter_num < 5:
+            batch_size = self.batch_size // 10
+        self.render_samples(window, batch_size)
 
         # Convert result to image.
         intensity = result_to_image(self.result, self.exposure)

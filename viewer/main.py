@@ -1,6 +1,7 @@
 import argparse
 
 from algs.buddhabrot import Buddhabrot
+from algs.cubulabrot import Cubulabrot
 from algs.cudabrot import Cudabrot
 from algs.mandelbrot import Mandelbrot
 from algs.nebulabrot import Nebulabrot
@@ -13,6 +14,7 @@ algorithms = {
     "buddhabrot": Buddhabrot,
     "nebulabrot": Nebulabrot,
     "cudabrot": Cudabrot,
+    "cubulabrot": Cubulabrot,
     "test_solid": SolidColor,
     "test_image": ImageResize,
 }

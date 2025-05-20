@@ -19,9 +19,6 @@ class Nebulabrot(Fractal):
             iters_b: int = 50,
             batch_size: int = int(1e5)
         ):
-        self.iters_r = iters_r
-        self.iters_g = iters_g
-        self.iters_b = iters_b
         self.batch_size = batch_size
 
         self.exposure = 1.5
@@ -33,10 +30,14 @@ class Nebulabrot(Fractal):
         self.time_start = time.time()
 
     def new_window(self, window):
-        self.result = window.blank_image(dtype=np.uint32)
+        self.result = window.blank_image(dtype=np.int32)
 
         self.time_start = time.time()
         self.samples = 0
+
+    def render_samples(self, window, batch_size):
+        for i in range(3):
+            self.samples += calc_buddhabrot(self.iters[i], batch_size, window, self.result[..., i])
 
     def render(self, window):
         assert self.result is not None
@@ -45,8 +46,7 @@ class Nebulabrot(Fractal):
         batch_size = self.batch_size
         if self.iter_num < 5:
             batch_size = self.batch_size // 10
-        for i in range(3):
-            self.samples += calc_buddhabrot(self.iters[i], batch_size, window, self.result[..., i])
+        self.render_samples(window, batch_size)
 
         image = np.zeros_like(self.result, dtype=np.uint8)
         for i in range(3):
