@@ -39,16 +39,43 @@ def color_mandel(mandel):
     return img
 
 
+def color_buddha(buddha):
+    """
+    Similar to color_mandel, with different schemes and thresholds.
+    """
+    img = np.zeros((buddha.shape[0], buddha.shape[1], 3), dtype=np.float32)
+
+    # Color points that escape
+    iters = buddha.copy()
+    iters[buddha <= 0] = 1  # Placeholder > 0
+    iters = np.log(iters.astype(np.float32))
+    iters = interp(iters, np.min(iters), np.max(iters), 0, 1, clamp=True)
+
+    for ch in range(3):
+        img[..., ch] = interp(iters, 0.3, 0.6, BLUE[ch], GREEN[ch], clamp=True)
+        img[..., ch] *= interp(iters, 0.2, 0.6, 0, 1, clamp=True)
+    img[buddha < 0] = (0, 0, 0)
+
+    return img
+
+
+def read_image(file, width, height):
+    with open(file, "rb") as fp:
+        data = np.fromfile(fp, dtype=np.int32).reshape(height, width)
+    return data
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--width", type=int, default=2000)
     parser.add_argument("--height", type=int, default=1000)
     args = parser.parse_args()
 
-    with open("mandelbrot.img", "rb") as fp:
-        mandel = np.fromfile(fp, dtype=np.int32).reshape(args.height, args.width)
+    mandel = read_image("mandelbrot.img", args.width, args.height)
+    buddha = read_image("buddhabrot.img", args.width, args.height)
 
     img = color_mandel(mandel)
+    #img = color_buddha(buddha)
 
     img = np.clip(img.astype(np.uint8), 0, 255)
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)

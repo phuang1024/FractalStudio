@@ -26,6 +26,6 @@ inline float interp(float x, float min1, float max1, float min2, float max2) {
 
 inline void iter_mandelbrot(float& zx, float& zy, float cx, float cy) {
     float tmp = zx * zx - zy * zy + cx;
-    zy = 2.0f * zx * zy + cy;
+    zy = 2 * zx * zy + cy;
     zx = tmp;
 }
