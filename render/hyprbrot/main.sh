@@ -9,4 +9,4 @@ g++ mandelbrot.cpp -o mandelbrot.out -O3 -Wall
 
 ./mandelbrot.out $XMIN $XMAX $YMIN $YMAX
 
-python compile.py --bounds $XMIN:$XMAX:$YMIN:$YMAX
+python compile.py # --bounds $XMIN $XMAX $YMIN $YMAX
