@@ -48,6 +48,19 @@ class Window:
         y_px = int(y_px)
         return x_px, y_px
 
+    @property
+    def xmin(self):
+        return self.pos[0] - self.scale / 2
+    @property
+    def xmax(self):
+        return self.pos[0] + self.scale / 2
+    @property
+    def ymin(self):
+        return self.pos[1] - self.scale * self.res[1] / self.res[0] / 2
+    @property
+    def ymax(self):
+        return self.pos[1] + self.scale * self.res[1] / self.res[0] / 2
+
 
 @dataclass
 class ViewerState:
