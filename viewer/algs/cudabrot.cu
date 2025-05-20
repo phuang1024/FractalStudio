@@ -2,8 +2,8 @@
 #include <cuda_runtime.h>
 #include <curand_kernel.h>
 
-constexpr int threads_per_block = 64;
-constexpr int blocks_per_grid = 32;
+constexpr int threads_per_block = 16;
+constexpr int blocks_per_grid = 16;
 
 
 __device__
@@ -16,26 +16,35 @@ inline int coord_to_px(const float co, const float min, const float max, const i
 
 __global__
 void buddhabrot(int* img, const int width, const int height, const int iters, const int samples,
-                           const float xmin, const float xmax, const float ymin, const float ymax,
-                           curandState* states, int rand_seed) {
+                const float xmin, const float xmax, const float ymin, const float ymax,
+                curandState* states, int rand_seed,
+                float* cache_re, float* cache_im) {
     // Initialize curand state.
     const int tid = blockIdx.x * blockDim.x + threadIdx.x;
     curandState* state = &states[tid];
     curand_init(rand_seed, tid, 0, state);
 
+    // Change data ptr.
+    cache_re += tid * iters;
+    cache_im += tid * iters;
+
     for (int i = 0; i < samples; i++) {
         // Sample c value
-        const float cx = (curand_uniform(state) - 0.5f) * 10.0f,
-                    cy = (curand_uniform(state) - 0.5f) * 10.0f;
+        const float cx = (curand_uniform(state) - 0.5f) * 4.0f,
+                    cy = (curand_uniform(state) - 0.5f) * 4.0f;
 
         // Iterate
         float zx = 0.0f, zy = 0.0f;
         bool in_set = true;
-        for (int j = 0; j < iters; j++) {
+        int iter;
+        for (iter = 0; iter < iters; iter++) {
             // Compute next z value
             float tmp = zx * zx - zy * zy + cx;
             zy = 2.0f * zx * zy + cy;
             zx = tmp;
+            // Store z value
+            cache_re[iter] = zx;
+            cache_im[iter] = zy;
             // Check divergence
             if (zx > 2.0f || zx < -2.0f ||
                 zy > 2.0f || zy < -2.0f) {
@@ -45,20 +54,11 @@ void buddhabrot(int* img, const int width, const int height, const int iters, co
         }
         if (!in_set) {
             // Update values.
-            float zx = 0.0f, zy = 0.0f;
-            for (int j = 0; j <= iters; j++) {
-                float tmp = zx * zx - zy * zy + cx;
-                zy = 2.0f * zx * zy + cy;
-                zx = tmp;
-                const int px = coord_to_px(zx, xmin, xmax, width),
-                          py = coord_to_px(zy, ymin, ymax, height);
+            for (int j = 0; j <= iter; j++) {
+                const int px = coord_to_px(cache_re[j], xmin, xmax, width),
+                          py = coord_to_px(cache_im[j], ymin, ymax, height);
                 if (px >= 0 && px < width && py >= 0 && py < height) {
                     atomicAdd(&img[py * width + px], 1);
-                }
-                // Check divergence
-                if (zx > 2.0f || zx < -2.0f ||
-                    zy > 2.0f || zy < -2.0f) {
-                    break;
                 }
             }
         }
@@ -72,13 +72,29 @@ void buddhabrot(int* img, const int width, const int height, const int iters, co
 int main() {
     // Initialize curand.
     curandState* states;
-    cudaMalloc(&states, blocks_per_grid * threads_per_block * sizeof(curandState));
+    cudaMallocManaged(&states, blocks_per_grid * threads_per_block * sizeof(curandState));
     int rand_seed = 0;
+
+    // Data for storing iterations of each sample.
+    float* cache_re = nullptr;
+    float* cache_im = nullptr;
+    int last_iters = -1;
 
     while (true) {
         int width, height, iters, samples;
         float xmin, xmax, ymin, ymax;
         std::cin >> width >> height >> iters >> samples >> xmin >> xmax >> ymin >> ymax;
+
+        // Allocate cache_re and cache_im.
+        if (cache_re == nullptr || iters != last_iters) {
+            if (cache_re != nullptr) {
+                cudaFree(cache_re);
+                cudaFree(cache_im);
+            }
+            last_iters = iters;
+            cudaMallocManaged(&cache_re, blocks_per_grid * threads_per_block * iters * sizeof(float));
+            cudaMallocManaged(&cache_im, blocks_per_grid * threads_per_block * iters * sizeof(float));
+        }
 
         // Allocate image.
         int* img = nullptr;
@@ -86,7 +102,10 @@ int main() {
         cudaMemset(img, 0, width * height * sizeof(int));
 
         buddhabrot<<<blocks_per_grid, threads_per_block>>>(
-            img, width, height, iters, samples, xmin, xmax, ymin, ymax, states, rand_seed
+            img, width, height, iters, samples,
+            xmin, xmax, ymin, ymax,
+            states, rand_seed,
+            cache_re, cache_im
         );
         cudaDeviceSynchronize();
 
