@@ -17,7 +17,7 @@ class CudaWorker:
     Wrapper around CUDA worker subprocess.
     """
 
-    num_threads = 16 * 16
+    num_threads = 64 * 128
 
     def __init__(self):
         self.process = Popen([os.path.join(PARENT, "cudabrot.out")], stdin=PIPE, stdout=PIPE)
@@ -43,7 +43,7 @@ class CudaWorker:
 
 
 class Cudabrot(Buddhabrot):
-    def __init__(self, iters: int = 1000, batch_size: int = int(1e4), hue: float = 0.69):
+    def __init__(self, iters: int = 1000, batch_size: int = int(5e3), hue: float = 0.69):
         super().__init__(iters, batch_size, hue)
         self.worker = CudaWorker()
 

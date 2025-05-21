@@ -22,7 +22,7 @@ class Buddhabrot(Fractal):
         self.time_start = time.time()
 
     def new_window(self, window):
-        self.result = window.blank_image(dtype=np.int32)[..., 0]
+        self.result = window.blank_image(dtype=np.int64)[..., 0]
 
         self.time_start = time.time()
         self.samples = 0

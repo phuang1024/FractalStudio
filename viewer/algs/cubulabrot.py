@@ -12,7 +12,7 @@ class Cubulabrot(Nebulabrot):
             iters_r: int = 1000,
             iters_g: int = 500,
             iters_b: int = 50,
-            batch_size: int = int(1e4)
+            batch_size: int = int(5e3)
         ):
         super().__init__(iters_r, iters_g, iters_b, batch_size)
         self.worker = CudaWorker()

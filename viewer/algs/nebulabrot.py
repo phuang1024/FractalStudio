@@ -30,7 +30,7 @@ class Nebulabrot(Fractal):
         self.time_start = time.time()
 
     def new_window(self, window):
-        self.result = window.blank_image(dtype=np.int32)
+        self.result = window.blank_image(dtype=np.int64)
 
         self.time_start = time.time()
         self.samples = 0

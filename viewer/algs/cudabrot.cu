@@ -2,8 +2,8 @@
 #include <cuda_runtime.h>
 #include <curand_kernel.h>
 
-constexpr int threads_per_block = 16;
-constexpr int blocks_per_grid = 16;
+constexpr int threads_per_block = 64;
+constexpr int blocks_per_grid = 128;
 
 
 __device__
