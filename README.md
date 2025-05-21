@@ -1,10 +1,12 @@
 # FractalStudio
 
-![](./gallery/ViewerBuddhabrot.jpg?raw=true)
+![](./gallery/ViewerCudabrot.gif?raw=true)
 
 Cuda accelerated fractal rendering.
 
-[Gallery](https://github.com/phuang1024/FractalStudio/tree/master/gallery)
+[Gallery](./gallery/)
+
+[Paper](./paper.pdf)
 
 
 ## Viewer
