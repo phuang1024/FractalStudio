@@ -107,7 +107,7 @@ def result_to_image(result, exposure):
     Convert result (int array of z value counts) to RGB image.
     """
     intensity = result
-    intensity = np.clip(intensity, 0, np.max(intensity) * 0.8)
+    intensity = np.clip(intensity, 0, np.max(intensity) * 0.5)
     intensity = intensity / np.max(intensity)
     intensity = np.tanh(intensity * exposure)
     intensity = intensity / np.max(intensity)
