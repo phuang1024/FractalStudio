@@ -39,15 +39,14 @@ void buddhabrot(int* img, const int width, const int height, const int iters, co
         int iter;
         for (iter = 0; iter < iters; iter++) {
             // Compute next z value
-            float tmp = zx * zx - zy * zy + cx;
+            const float tmp = zx * zx - zy * zy + cx;
             zy = 2.0f * zx * zy + cy;
             zx = tmp;
             // Store z value
             cache_re[iter] = zx;
             cache_im[iter] = zy;
             // Check divergence
-            if (zx > 2.0f || zx < -2.0f ||
-                zy > 2.0f || zy < -2.0f) {
+            if (zx > 2.0f || zx < -2.0f || zy > 2.0f || zy < -2.0f) {
                 in_set = false;
                 break;
             }

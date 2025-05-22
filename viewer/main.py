@@ -1,20 +1,22 @@
 import argparse
 
 from algs.buddhabrot import Buddhabrot
-from algs.cubulabrot import Cubulabrot
-from algs.cudabrot import Cudabrot
+from algs.buddhacu import Buddhacu
 from algs.mandelbrot import Mandelbrot
+from algs.mandelcu import Mandelcu
 from algs.nebulabrot import Nebulabrot
+from algs.nebulacu import Nebulacu
 from algs.test import *
 from viewer import viewer
 
 
 algorithms = {
-    "mandelbrot": Mandelbrot,
-    "buddhabrot": Buddhabrot,
-    "nebulabrot": Nebulabrot,
-    "cudabrot": Cudabrot,
-    "cubulabrot": Cubulabrot,
+    "mandel": Mandelbrot,
+    "mandelcu": Mandelcu,
+    "buddha": Buddhabrot,
+    "nebula": Nebulabrot,
+    "buddhacu": Buddhacu,
+    "nebulacu": Nebulacu,
     "test_solid": SolidColor,
     "test_image": ImageResize,
 }

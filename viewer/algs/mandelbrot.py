@@ -21,11 +21,15 @@ class Mandelbrot(Fractal):
 
         self.render_time = 0
 
+    def compute_iters(self, window):
+        result = calc_mandelbrot(window, self.iters)
+        result = result.cpu().numpy()
+        return result
+
     def render(self, window):
         time_start = time.time()
 
-        result = calc_mandelbrot(window, self.iters)
-        result = result.cpu().numpy()
+        result = self.compute_iters(window)
 
         if self.gradient_type == "none":
             image = window.blank_image()

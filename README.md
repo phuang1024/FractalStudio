@@ -19,9 +19,9 @@ only python.
 ```bash
 cd ./viewer
 
-python main.py viewer --alg mandelbrot
-python main.py viewer --alg buddhabrot
-python main.py viewer --alg nebulabrot
+python main.py --alg mandel
+python main.py --alg buddha
+python main.py --alg nebula
 ```
 
 

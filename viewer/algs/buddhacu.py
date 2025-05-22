@@ -19,8 +19,8 @@ class CudaWorker:
 
     num_threads = 64 * 128
 
-    def __init__(self):
-        self.process = Popen([os.path.join(PARENT, "cudabrot.out")], stdin=PIPE, stdout=PIPE)
+    def __init__(self, exe_name):
+        self.process = Popen([os.path.join(PARENT, exe_name)], stdin=PIPE, stdout=PIPE)
 
     def query(self, window, iters, batch_size):
         assert self.process.returncode is None
@@ -42,10 +42,10 @@ class CudaWorker:
             return None
 
 
-class Cudabrot(Buddhabrot):
+class Buddhacu(Buddhabrot):
     def __init__(self, iters: int = 1000, batch_size: int = int(5e3), hue: float = 0.69):
         super().__init__(iters, batch_size, hue)
-        self.worker = CudaWorker()
+        self.worker = CudaWorker("buddha.out")
 
     def render_samples(self, window, batch_size):
         data = self.worker.query(window, self.iters, batch_size)
